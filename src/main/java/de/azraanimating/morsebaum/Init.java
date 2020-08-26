@@ -6,7 +6,7 @@ public class Init {
 
         MorseBaum morseBaum = new MorseBaum();
 
-
+        morseBaum.printDecoded(".... .- .-.. .-.. ---");
 
     }
 

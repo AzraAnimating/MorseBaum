@@ -1,162 +1,205 @@
-package de.azraanimating.morsebaum;
 
+package de.azraanimating.morsebaum;
 /**
- * <p>Materialien zu den zentralen
- * Abiturpruefungen im Fach Informatik ab 2012 in 
- * Nordrhein-Westfalen.</p>
- * <p>Klasse BinaryTree</p>
- * <p>Mithilfe der Klasse BinaryTree koennen beliebig viele Inhaltsobjekte in einem Binaerbaum verwaltet werden.
- * Ein Objekt der Klasse stellt entweder einen leeren Baum dar oder verwaltet ein Inhaltsobjekt sowie einen 
- * linken und einen rechten Teilbaum, die ebenfalls Objekte der Klasse BinaryTree sind.</p>
+ * <p>
+ * Materialien zu den zentralen NRW-Abiturpruefungen im Fach Informatik ab 2017.
+ * </p>
+ * <p>
+ * Generische Klasse BinaryTree<ContentType>
+ * </p>
+ * <p>
+ * Mithilfe der generischen Klasse BinaryTree koennen beliebig viele
+ * Inhaltsobjekte vom Typ ContentType in einem Binaerbaum verwaltet werden. Ein
+ * Objekt der Klasse stellt entweder einen leeren Baum dar oder verwaltet ein
+ * Inhaltsobjekt sowie einen linken und einen rechten Teilbaum, die ebenfalls
+ * Objekte der generischen Klasse BinaryTree sind.
+ * </p>
  *
- * <p>NW-Arbeitsgruppe: Materialentwicklung zum Zentralabitur 
- * im Fach Informatik</p>
- *
- * @version 2011-01-05
+ * @author Qualitaets- und UnterstuetzungsAgentur - Landesinstitut fuer Schule;
+ *         Materialien zum schulinternen Lehrplan Informatik SII
+ * @version Generisch_04 2020-03-11
  */
-public class BinaryTree
-{
-    private Object lContent;
-    private BinaryTree lLeftTree, lRightTree;
+public class BinaryTree<ContentType> {
+
+    /* --------- Anfang der privaten inneren Klasse -------------- */
 
     /**
-     *Nach dem Aufruf des Konstruktors existiert ein leerer Binaerbaum.
+     * Durch diese innere Klasse kann man dafuer sorgen, dass ein leerer Baum null
+     * ist, ein nicht-leerer Baum jedoch immer eine nicht-null-Wurzel sowie
+     * nicht-null-Teilbaeume, ggf. leere Teilbaeume hat.
+     */
+    private class BTNode {
+
+        private ContentType content;
+        private BinaryTree<ContentType> left, right;
+
+        private BTNode(ContentType pContent) {
+            // Der Knoten hat einen linken und einen rechten Teilbaum, die
+            // beide von null verschieden sind. Also hat ein Blatt immer zwei
+            // leere Teilbaeume unter sich.
+            this.content = pContent;
+            left = new BinaryTree<ContentType>();
+            right = new BinaryTree<ContentType>();
+        }
+
+    }
+
+    /* ----------- Ende der privaten inneren Klasse -------------- */
+
+    private BTNode node;
+
+    /**
+     * Nach dem Aufruf des Konstruktors existiert ein leerer Binaerbaum.
      */
     public BinaryTree() {
-        lContent = null;
-        lLeftTree = null;
-        lRightTree = null;
+        this.node = null;
     }
 
     /**
-     *Wenn der Parameter pContent ungleich null ist, existiert nach dem Aufruf des Konstruktors der Binaerbaum und hat pContent als Inhaltsobjekt
-     *und zwei leere Teilbaeume. Falls der Parameter null ist, wird ein leerer Binaerbaum erzeugt.
-     *@param pObject  Inhaltsobjekt
+     * Wenn der Parameter pContent ungleich null ist, existiert nach dem Aufruf des
+     * Konstruktors der Binaerbaum und hat pContent als Inhaltsobjekt und zwei leere
+     * Teilbaeume. Falls der Parameter null ist, wird ein leerer Binaerbaum erzeugt.
+     *
+     * @param pContent das Inhaltsobjekt des Wurzelknotens vom Typ ContentType
      */
-    public BinaryTree(Object pObject) {
-        if (pObject!=null) {
-            lContent = pObject;
-            lLeftTree = new BinaryTree();
-            lRightTree = new BinaryTree();
-        }
-        else {
-            lContent = null;
-            lLeftTree = null;
-            lRightTree = null;
+    public BinaryTree(ContentType pContent) {
+        if (pContent != null) {
+            this.node = new BTNode(pContent);
+        } else {
+            this.node = null;
         }
     }
 
     /**
-     *Wenn der Parameter pContent ungleich null ist, wird ein Binaerbaum mit pContent als Objekt
-     *und den beiden Teilbaeume pLeftTree und pRightTree erzeugt. Sind  pLeftTree oder pRightTree gleich null, wird der entsprechende Teilbaum
-     *als leerer Binaerbaum eingefuegt. Wenn der Parameter pContent gleich null ist, wird ein leerer Binaerbaum erzeugt.
-     *@param pContent  Inhaltsobjekt 
-     *@param pLinkerBaum linker Binaerbaum
-     *@param pRechterBaum rechter Binaerbaum
+     * Wenn der Parameter pContent ungleich null ist, wird ein Binaerbaum mit
+     * pContent als Inhalt und den beiden Teilbaeumen pLeftTree und pRightTree
+     * erzeugt. Sind pLeftTree oder pRightTree gleich null, wird der entsprechende
+     * Teilbaum als leerer Binaerbaum eingefuegt. So kann es also nie passieren,
+     * dass linke oder rechte Teilbaeume null sind. Wenn der Parameter pContent
+     * gleich null ist, wird ein leerer Binaerbaum erzeugt.
+     *
+     * @param pContent   das Inhaltsobjekt des Wurzelknotens vom Typ ContentType
+     * @param pLeftTree  der linke Teilbaum vom Typ BinaryTree<ContentType>
+     * @param pRightTree der rechte Teilbaum vom Typ BinaryTree<ContentType>
      */
-    public BinaryTree(Object pContent, BinaryTree pLinkerBaum, BinaryTree pRechterBaum){
-        if (pContent!=null) {
-            lContent = pContent;
-            if (pLinkerBaum!=null)
-                lLeftTree = pLinkerBaum;
-            else
-                lLeftTree = new BinaryTree();
-            if (pRechterBaum!=null)
-                lRightTree = pRechterBaum;
-            else
-                lRightTree = new BinaryTree();
+    public BinaryTree(ContentType pContent, BinaryTree<ContentType> pLeftTree, BinaryTree<ContentType> pRightTree) {
+        if (pContent != null) {
+            this.node = new BTNode(pContent);
+            if (pLeftTree != null) {
+                this.node.left = pLeftTree;
+            } else {
+                this.node.left = new BinaryTree<ContentType>();
+            }
+            if (pRightTree != null) {
+                this.node.right = pRightTree;
+            } else {
+                this.node.right = new BinaryTree<ContentType>();
+            }
+        } else {
+            // Da der Inhalt null ist, wird ein leerer BinarySearchTree erzeugt.
+            this.node = null;
         }
-        else {    // da der Inhalt null ist, wird ein leerer Baum erzeugt
-            lContent = null;
-            lLeftTree = null;
-            lRightTree = null;
-        }
-
     }
 
     /**
-     *Diese Anfrage liefert den Wahrheitswert true, wenn der Binaerbaum leer ist, sonst liefert sie den Wert false.
-     *@return true, wenn der Binaerbaum leer ist, sonst false
+     * Diese Anfrage liefert den Wahrheitswert true, wenn der Binaerbaum leer ist,
+     * sonst liefert sie den Wert false.
+     *
+     * @return true, wenn der Binaerbaum leer ist, sonst false
      */
     public boolean isEmpty() {
-        return (lContent==null);
+        return this.node == null;
     }
 
     /**
-     *Wenn der Binaerbaum leer ist, wird der Parameter pObject als Inhaltsobjekt sowie ein leerer linker und rechter Teilbaum eingefuegt.
-     *Ist der Binaerbaum nicht leer, wird das Inhaltsobjekt durch pObject ersetzt. Die Teilbaeume werden nicht geaendert.
-     *Wenn pObject null ist, bleibt der Binaerbaum unveraendert.
-     *@param pObject neues Inhaltsobjekt
+     * Wenn pContent null ist, geschieht nichts. <br />
+     * Ansonsten: Wenn der Binaerbaum leer ist, wird der Parameter pContent als
+     * Inhaltsobjekt sowie ein leerer linker und rechter Teilbaum eingefuegt. Ist
+     * der Binaerbaum nicht leer, wird das Inhaltsobjekt durch pContent ersetzt. Die
+     * Teilbaeume werden nicht geaendert.
+     *
+     * @param pContent neues Inhaltsobjekt vom Typ ContentType
      */
-    public void  setObject(Object pObject) {
-        if (pObject!=null) {
+    public void setContent(ContentType pContent) {
+        if (pContent != null) {
             if (this.isEmpty()) {
-                lLeftTree = new BinaryTree();
-                lRightTree = new BinaryTree();
+                node = new BTNode(pContent);
+                this.node.left = new BinaryTree<ContentType>();
+                this.node.right = new BinaryTree<ContentType>();
             }
-            lContent = pObject;
+            this.node.content = pContent;
         }
     }
 
     /**
-     *Diese Anfrage liefert das Inhaltsobjekt des Binaerbaums. Wenn der Binaerbaum leer ist, wird null zurueckgegeben.
-     *@return Inhaltsobjekt (bzw. null, wenn der Baum leer ist)
+     * Diese Anfrage liefert das Inhaltsobjekt des Binaerbaums. Wenn der Binaerbaum
+     * leer ist, wird null zurueckgegeben.
+     *
+     * @return das Inhaltsobjekt der Wurzel vom Typ ContentType bzw. null, wenn der
+     *         Binaerbaum leer ist
      */
-    public Object getObject() {
-        return lContent  ;
-    }
-
-    /**
-     *Wenn der Binaerbaum leer ist, wird pTree nicht angehaengt.
-     *Andernfalls erhaelt der Binaerbaum den uebergebenen Baum als linken Teilbaum. Falls der Parameter null ist, aendert sich nichts.
-     *@param pTree neuer linker Teilbaum
-     */
-    public void setLeftTree(BinaryTree pTree) {
-        if (!this.isEmpty() && pTree!=null)
-            lLeftTree = pTree;
-    }
-
-    /**
-     *Wenn der Binaerbaum leer ist, wird pTree nicht angehaengt.
-     *Andernfalls erhaelt der Binaerbaum den uebergebenen Baum als rechten Teilbaum. Falls der Parameter null ist, aendert sich nichts.
-     *@param pTree neuer rechter Teilbaum
-     */
-    public void setRightTree(BinaryTree pTree) {
-        if (! this.isEmpty() && pTree!=null)
-            lRightTree = pTree;
-    }
-
-    /**
-     *Diese Anfrage liefert den linken Teilbaum des Binaerbaumes.
-     *Der Binaerbaum aendert sich nicht. Wenn der Binaerbaum leer ist, wird null zurueckgegeben.
-     *@return linker Teilbaum
-     */
-    public BinaryTree getLeftTree() {
-        if (! this.isEmpty())
-            return lLeftTree;
-        else
+    public ContentType getContent() {
+        if (this.isEmpty()) {
             return null;
+        } else {
+            return this.node.content;
+        }
     }
 
     /**
-     *Diese Anfrage liefert den rechten Teilbaum des Binaerbaumes.
-     *Der Binaerbaum aendert sich nicht. Wenn der Binaerbaum leer ist, wird null zurueckgegeben.
-     *@return rechter Teilbaum
+     * Falls der Parameter null ist, geschieht nichts. Wenn der Binaerbaum leer ist,
+     * wird pTree nicht angehaengt. Andernfalls erhaelt der Binaerbaum den
+     * uebergebenen BinaryTree als linken Teilbaum.
+     *
+     * @param pTree neuer linker Teilbaum vom Typ BinaryTree<ContentType>
      */
-    public BinaryTree getRightTree() {
-        if (! this.isEmpty())
-            return lRightTree;
-        else
+    public void setLeftTree(BinaryTree<ContentType> pTree) {
+        if (!this.isEmpty() && pTree != null) {
+            this.node.left = pTree;
+        }
+    }
+
+    /**
+     * Falls der Parameter null ist, geschieht nichts. Wenn der Binaerbaum leer ist,
+     * wird pTree nicht angehaengt. Andernfalls erhaelt der Binaerbaum den
+     * uebergebenen BinaryTree als rechten Teilbaum.
+     *
+     * @param pTree neuer linker Teilbaum vom Typ BinaryTree<ContentType>
+     */
+    public void setRightTree(BinaryTree<ContentType> pTree) {
+        if (!this.isEmpty() && pTree != null) {
+            this.node.right = pTree;
+        }
+    }
+
+    /**
+     * Diese Anfrage liefert den linken Teilbaum des Binaerbaumes. Wenn der
+     * Binaerbaum leer ist, wird null zurueckgegeben.
+     *
+     * @return linker Teilbaum vom Typ BinaryTree<ContentType> oder null, wenn der
+     *         aktuelle Binaerbaum leer ist
+     */
+    public BinaryTree<ContentType> getLeftTree() {
+        if (!this.isEmpty()) {
+            return this.node.left;
+        } else {
             return null;
+        }
     }
 
     /**
-     *Der Baum wird durch diesen Auftrag geleert. 
-     *Die Anfrage isEmpty liefert danach true zurueck und auf die beiden urspruenglichen Teilbaeume kann nicht mehr zugegriffen werden.
+     * Diese Anfrage liefert den rechten Teilbaum des Binaerbaumes. Wenn der
+     * Binaerbaum (this) leer ist, wird null zurueckgegeben.
+     *
+     * @return rechter Teilbaum vom Typ BinaryTree<ContentType> oder null, wenn der
+     *         aktuelle Binaerbaum (this) leer ist
      */
-    public void setEmpty() {
-        lContent = null;
-        lLeftTree = null;
-        lRightTree = null;
+    public BinaryTree<ContentType> getRightTree() {
+        if (!this.isEmpty()) {
+            return this.node.right;
+        } else {
+            return null;
+        }
     }
+
 }
