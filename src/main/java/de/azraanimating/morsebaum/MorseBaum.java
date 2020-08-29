@@ -1,7 +1,5 @@
 package de.azraanimating.morsebaum;
 
-import de.azraanimating.morsebaum.BinaryTree;
-
 public class MorseBaum {
 
     private final BinaryTree morsebaum;
@@ -37,7 +35,9 @@ public class MorseBaum {
                         new BinaryTree<String>("W",
                                 new BinaryTree<String>("J"),
                                 new BinaryTree<String>("P")),
-                        new BinaryTree<String>("R")),
+                        new BinaryTree<String>("R",
+                                new BinaryTree<String>(),
+                                new BinaryTree<String>("L"))),
                 new BinaryTree<String>("I",
                         new BinaryTree<String>("U",
                                 new BinaryTree<String>(),
@@ -48,19 +48,6 @@ public class MorseBaum {
     }
 
     //Decoding
-
-    private String decode(String pInputCode)
-    {
-        String[] lCodes = pInputCode.split(" ");
-        StringBuilder lFinalStringBuilder = new StringBuilder();
-
-        for(int i = 0 ; i < lCodes.length ; i++)
-        {
-            lFinalStringBuilder.append(this.getStringForCode(lCodes[i]));
-        }
-
-        return lFinalStringBuilder.toString();
-    }
 
     private String[] split(String pCode)
     {
@@ -87,58 +74,67 @@ public class MorseBaum {
         return lSymbols;
     }
 
-    private String getStringForCode(String pCode)
+
+    private void decode(String pCode, BinaryTree<String> pBaum)
     {
-        String[] lSymbols = this.split(pCode);
-        StringBuilder stringBuilder = new StringBuilder();
-        this.followPath(this.morsebaum, lSymbols, stringBuilder, 0);
-        return stringBuilder.toString();
+        if(pCode.equalsIgnoreCase("/")) {
+            System.out.print(" ");
+            return;
+        }
+
+        if(pCode.length() < 1) {
+            System.out.print(pBaum.getContent());
+        }
+
+        if (pCode.startsWith(".")) {
+            this.decode(pCode.substring(1), pBaum.getRightTree());
+        } else if (pCode.startsWith("-")) {
+            this.decode(pCode.substring(1), pBaum.getLeftTree());
+        }
     }
 
-    private void followPath(BinaryTree pBaum, String[] pSymbol, StringBuilder pStringBuilder, int pCurrentIndex)
-    {
-        if(pCurrentIndex >= pSymbol.length - 1 && pCurrentIndex > 0) {
-            if(pBaum.getLeftTree() != null && pBaum.getRightTree() != null) {
-                if (pSymbol[pCurrentIndex - 1].equals(".")) {
-                    if(!pBaum.getRightTree().isEmpty()) {
-                        pStringBuilder.append(pBaum.getRightTree().getContent());
-                    } else {
-                        pStringBuilder.append(pBaum.getContent());
-                    }
-                } else if (pSymbol[pCurrentIndex - 1].equals("-")) {
-                    if(!pBaum.getLeftTree().isEmpty()) {
-                        pStringBuilder.append(pBaum.getLeftTree().getContent());
-                    } else {
-                        pStringBuilder.append(pBaum.getContent());
-                    }
-                }
-                return;
+    private void encode(String pSearchedChar, String currentCode, BinaryTree<String> pTree) {
+        if(!pTree.isEmpty()) {
+            if(!pTree.getContent().equalsIgnoreCase(pSearchedChar)) {
+                this.encode(pSearchedChar, currentCode + "-", pTree.getLeftTree());
+                this.encode(pSearchedChar, currentCode + ".", pTree.getRightTree());
             } else {
-                pStringBuilder.append(pBaum.getContent());
-            }
-        }
-        if(pSymbol[pCurrentIndex].equals("."))
-        {
-            if(pBaum.getRightTree() != null)
-            {
-                this.followPath(pBaum.getRightTree(), pSymbol, pStringBuilder, pCurrentIndex + 1);
-            } else {
-                pStringBuilder.append(pBaum.getContent());
-            }
-        }
-        else if(pSymbol[pCurrentIndex].equals("-"))
-        {
-            if(pBaum.getRightTree() != null)
-            {
-                this.followPath(pBaum.getLeftTree(), pSymbol, pStringBuilder, pCurrentIndex + 1);
-            } else {
-                pStringBuilder.append(pBaum.getContent());
+                System.out.print(currentCode);
             }
         }
     }
 
     public void printDecoded(String pMessageToDecode)
     {
-        System.out.println(this.decode(pMessageToDecode));
+        String[] codes = pMessageToDecode.split(" ");
+
+        for (String code : codes) {
+            this.decode(code, this.morsebaum);
+            System.out.print(" ");
+        }
+    }
+
+    public void ausgabe(BinaryTree<String> pTree) {
+        if(!pTree.isEmpty()) {
+            this.ausgabe(pTree.getLeftTree());
+            System.out.print(pTree.getContent());
+            this.ausgabe(pTree.getRightTree());
+        }
+    }
+
+    public void triggerAusgabe() {
+        this.ausgabe(this.morsebaum);
+    }
+
+    public void encodeString(String pStringToEncode) {
+        String[] words = pStringToEncode.split(" ");
+
+        for (String word : words) {
+            for (String letter : this.split(word)) {
+                this.encode(letter, "", this.morsebaum);
+                System.out.print(" ");
+            }
+            System.out.print("/ ");
+        }
     }
 }

@@ -6,7 +6,11 @@ public class Init {
 
         MorseBaum morseBaum = new MorseBaum();
 
-        morseBaum.printDecoded(".... .- .-.. .-.. ---");
+        //morseBaum.encodeString("Guten Tag Friends wie geht es euch");
+
+        //morseBaum.triggerAusgabe();
+
+        morseBaum.printDecoded("--. ..- - . -. / - .- --. / ..-. .-. .. . -. -.. ... / .-- .. . / --. . .... - / . ... / . ..- -.-. .... /");
 
     }
 
